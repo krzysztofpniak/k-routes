@@ -1,3 +1,3 @@
-const init = () => true;
+const init = () => 'test';
 
 export {init};
