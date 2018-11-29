@@ -30,6 +30,7 @@ module.exports = {
     '@babel/plugin-transform-template-literals',
     '@babel/proposal-object-rest-spread',
     '@babel/plugin-transform-spread',
+    '@babel/plugin-proposal-class-properties',
     NODE_ENV === 'test' && '@babel/transform-modules-commonjs',
   ].filter(Boolean),
 };
