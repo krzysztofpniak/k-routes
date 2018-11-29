@@ -1,7 +1,5 @@
 import nodeResolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
-//import globals from 'rollup-plugin-node-globals';
-//import builtins from 'rollup-plugin-node-builtins';
 import replace from 'rollup-plugin-replace';
 import babel from 'rollup-plugin-babel';
 import pkg from './package.json';
@@ -20,7 +18,6 @@ export default [
             }),
             nodeResolve({
                 jsnext: true,
-                //main: true,
             }),
             commonjs({
                 namedExports: {
@@ -37,7 +34,7 @@ export default [
 	// the `targets` option which can specify `dest` and `format`)
 	{
 		input: 'src/main.js',
-		external: ['ramda', 'react', 'reselect', 'k-reducer', 'recompose', 'redux-actions', 'path-parser', 'redux-saga'],
+		external: ['ramda', 'react', 'reselect', 'k-reducer', 'redux', 'recompose', 'redux-actions', 'path-parser', 'react-redux'],
 		output: [
 			{ file: pkg.main, format: 'cjs' },
 			{ file: pkg.module, format: 'es' }
