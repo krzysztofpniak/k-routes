@@ -9,12 +9,14 @@
   "module": "dist/k-routes.esm.js",
   "browser": "dist/k-routes.umd.js",
   "dependencies": {
-    "k-reducer": "^0.1.0",
+    "k-reducer": "0.2.5",
+    "k-logic": "0.4.2",
     "path-parser": "^4.2.0",
     "ramda": "^0.25.0",
     "react": "^16.5.2",
+    "react-redux": "^5.0.7",
     "recompose": "^0.30.0",
-    "redux-saga": "^0.16.2",
+    "redux": "^4.0.1",
     "reselect": "^4.0.0"
   },
   "devDependencies": {
