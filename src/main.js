@@ -2,7 +2,7 @@ import React, {Component, Children, cloneElement} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {createSelector} from 'reselect';
-import {actionType, forwardTo, createReducer} from 'k-reducer';
+import {actionType, forwardTo, nest, createReducer} from 'k-reducer';
 import {withLogic, ScopedComponent} from 'k-logic';
 import {pure, lifecycle} from 'recompose';
 import {
@@ -250,6 +250,49 @@ const Route = lifecycle({
   </div>
 ));
 
+const routerUpdater = createReducer({name: '', params: {}}, [
+  actionType('SetState', ({name, params, paramsMap, path, modelPath}, model) =>
+    merge(model, {name, params, paramsMap, path, modelPath})
+  ),
+]);
+
+const createRouterReducer = routerProp => {
+  const routerReducer = nest(routerProp, routerUpdater);
+  const setStateActionType = `${routerProp}.SetState`;
+
+  return (model, action) => {
+    routerPropName = routerProp;
+
+    let newModel = routerReducer(model, action);
+
+    if (action.type === setStateActionType) {
+      for (let propName in action.payload.paramsMap) {
+        if (action.payload.paramsMap.hasOwnProperty(propName)) {
+          const paramValue = action.payload.params[propName];
+          const modelPath = action.payload.paramsMap[propName];
+          const hasParam = has(propName, action.payload.params);
+
+          if (hasParam) {
+            const routes = getRoutes();
+            const route = find(
+              propEq('name', newModel[routerProp].name),
+              routes
+            );
+
+            newModel = over(
+              lensPath(modelPath),
+              set(route.paramLenses[propName], paramValue),
+              newModel
+            );
+          }
+        }
+      }
+    }
+
+    return newModel;
+  };
+};
+
 class RouterInt extends ScopedComponent {
   constructor(props, context) {
     super(props, context);
@@ -277,7 +320,10 @@ class RouterInt extends ScopedComponent {
 
   componentWillMount() {
     this.initRouting();
-    this.assocReducer(this.getCurrentScope([this.props.scope]), routerUpdater);
+    this.assocReducer(
+      this.getCurrentScope(),
+      createRouterReducer(this.props.scope)
+    );
   }
 
   componentWillUpdate() {
@@ -385,49 +431,6 @@ const Link = pure(
     );
   }
 );
-
-const routerUpdater = createReducer({name: '', params: {}}, [
-  actionType('SetState', ({name, params, paramsMap, path, modelPath}, model) =>
-    merge(model, {name, params, paramsMap, path, modelPath})
-  ),
-]);
-
-const createRouterReducer = routerProp => (model, action) => {
-  routerPropName = routerProp;
-  //let newModel = model.update(routerProp, routerUpdater, action);
-  let newModel = over(
-    lensProp(routerProp),
-    subModel => routerUpdater(subModel, action),
-    model
-  );
-  //model.update(routerProp, routerUpdater, action);
-  /*
-    if (action.type === 'SetState') {
-        for (let propName in action.payload.paramsMap) {
-            if (action.payload.paramsMap.hasOwnProperty(propName)) {
-                const paramValue = action.payload.params[propName];
-                const modelPath = action.payload.paramsMap[propName];
-                const hasParam = has(propName, action.payload.params);
-
-                if (hasParam) {
-                    const routes = getRoutes();
-                    const route = find(
-                        propEq('name', newModel[routerProp].name),
-                        routes
-                    );
-
-                    newModel = over(
-                        lensPath(modelPath),
-                        set(route.paramLenses[propName], paramValue),
-                        newModel
-                    );
-                }
-            }
-        }
-    }
-*/
-  return newModel;
-};
 
 const Router = RouterInt;
 
