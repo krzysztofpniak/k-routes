@@ -367,6 +367,7 @@ const Link = pure(
     return (
       <a
         //className={`${className || ''}${isActive ? ' active' : ''}`}
+        className={className}
         title={title}
         href={resolvedHref}
         disabled={disabled}
