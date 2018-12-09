@@ -407,28 +407,32 @@ const routeMatches = ({name, params}) =>
 
 const Link = pure(
   ({href, name, content, title, className, children, params, disabled}) => {
-    const resolvedHref = resolveHref({href, name, params});
-    //const isActive = routeMatches({name, params});
+    try {
+      const resolvedHref = resolveHref({href, name, params});
+      //const isActive = routeMatches({name, params});
 
-    return (
-      <a
-        //className={`${className || ''}${isActive ? ' active' : ''}`}
-        className={className}
-        title={title}
-        href={resolvedHref}
-        disabled={disabled}
-        onClick={e => {
-          e.preventDefault();
-          if (!disabled) {
-            pushState(resolvedHref);
-          }
-        }}
-      >
-        {React.Children.count(children) !== 0
-          ? React.Children.map(children, f => f)
-          : content || ''}
-      </a>
-    );
+      return (
+        <a
+          //className={`${className || ''}${isActive ? ' active' : ''}`}
+          className={className}
+          title={title}
+          href={resolvedHref}
+          disabled={disabled}
+          onClick={e => {
+            e.preventDefault();
+            if (!disabled) {
+              pushState(resolvedHref);
+            }
+          }}
+        >
+          {React.Children.count(children) !== 0
+            ? React.Children.map(children, f => f)
+            : content || ''}
+        </a>
+      );
+    } catch (e) {
+      console.error(e);
+    }
   }
 );
 
