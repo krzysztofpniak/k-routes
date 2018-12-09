@@ -8,7 +8,7 @@
   "main": "dist/k-routes.cjs.js",
   "module": "dist/k-routes.esm.js",
   "dependencies": {
-    "k-logic": "0.4.2",
+    "k-logic": "^0.5.0",
     "k-reducer": "0.2.5",
     "path-parser": "^4.2.0",
     "ramda": "^0.25.0",
