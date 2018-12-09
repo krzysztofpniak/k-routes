@@ -432,6 +432,7 @@ const Link = pure(
       );
     } catch (e) {
       console.error(e);
+      return null;
     }
   }
 );
