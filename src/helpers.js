@@ -1,7 +1,7 @@
 import React, {Children, createElement} from 'react';
 import Path from 'path-parser';
 import {forwardTo} from 'k-reducer';
-import {ScopedComponent} from 'k-logic';
+import {Scope} from 'k-logic';
 import {
   map,
   filter,
@@ -114,6 +114,8 @@ const flattenRoutes = (children, nodelist, result) => {
 const resolveAdditionalProps = (selector, model, args) =>
   selector ? selector(model, args) : {};
 
+const PassBy = ({children}) => children;
+
 const renderView = (components, props, forbiddenComponent) => {
   const tail = components.slice();
   const head = tail.shift();
@@ -122,7 +124,8 @@ const renderView = (components, props, forbiddenComponent) => {
     return null;
   }
 
-  const model = head.modelPath ? props.model[head.modelPath] : props.model;
+  const model =
+    (head.modelPath ? props.model[head.modelPath] : props.model) || {};
   const dispatch = head.modelPath
     ? forwardTo(props.dispatch, head.modelPath)
     : props.dispatch;
@@ -130,7 +133,7 @@ const renderView = (components, props, forbiddenComponent) => {
   return defaultToTrue(head.isAccessible)
     ? head.component
       ? createElement(
-          ScopedComponent,
+          head.modelPath ? Scope : PassBy,
           {
             scope: head.modelPath,
           },

@@ -2,7 +2,7 @@ import React from 'react';
 import {render} from 'react-dom';
 import {createStore, compose, applyMiddleware} from 'redux';
 import {Provider, connect} from 'react-redux';
-import {sagaMiddleware} from 'k-logic';
+import {sagaMiddleware, KLogicProvider} from 'k-logic';
 import App from './components/app';
 import appReducer from './components/appReducer';
 import {createRouterMiddleware, start} from '../../src/main';
@@ -24,14 +24,10 @@ const store = createStore(
 store.runSaga = sagaMiddleware.run;
 
 const run = (containerDomId, View) => {
-  const ConnectedView = connect(appState => ({
-    model: appState,
-  }))(View);
-
   render(
-    <Provider store={store}>
-      <ConnectedView />
-    </Provider>,
+    <KLogicProvider store={store}>
+      <View />
+    </KLogicProvider>,
     document.getElementById(containerDomId)
   );
 };

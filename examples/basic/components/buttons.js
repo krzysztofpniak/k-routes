@@ -1,28 +1,25 @@
 import React from 'react';
-import {compose, withHandlers} from 'recompose';
-import {withLogic} from 'k-logic';
+import {withScope, useKReducer, Scope} from 'k-logic';
 import {actionType2, createReducer} from 'k-reducer';
 import {over, lensProp, add} from 'ramda';
 
-const Scope = withLogic({reducer: () => createReducer({}, [])})(
-  ({children}) => <div>{children}</div>
-);
+const buttonReducer = createReducer({counter: 0}, [
+  actionType2('INC', over(lensProp('counter'), add(1))),
+]);
 
-const Button = compose(
-  withLogic({
-    reducer: () =>
-      createReducer({counter: 0}, [
-        actionType2('INC', over(lensProp('counter'), add(1))),
-      ]),
-  }),
-  withHandlers({
-    onClick: props => e => props.dispatch({type: 'INC'}),
-  })
-)(({children, counter, onClick}) => (
-  <button onClick={onClick} type="button">
-    {`Hopla ${counter}`}
-  </button>
-));
+const buttonActions = {
+  inc: () => ({type: 'INC'}),
+};
+
+const Button = withScope(() => {
+  const {inc, counter} = useKReducer(buttonReducer, buttonActions);
+
+  return (
+    <button onClick={inc} type="button">
+      {`Hopla ${counter}`}
+    </button>
+  );
+});
 
 const Buttons = () => (
   <Scope scope="buttons">

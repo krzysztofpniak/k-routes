@@ -1,9 +1,7 @@
 import React, {Component, Children, cloneElement} from 'react';
-import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
 import {createSelector} from 'reselect';
 import {actionType, forwardTo, nest, createReducer} from 'k-reducer';
-import {withLogic, ScopedComponent} from 'k-logic';
+import {KLogicContext} from 'k-logic';
 import {pure, lifecycle} from 'recompose';
 import {
   rootComponentMatcher,
@@ -293,20 +291,13 @@ const createRouterReducer = routerProp => {
   };
 };
 
-class RouterInt extends ScopedComponent {
+class RouterInt extends Component {
   constructor(props, context) {
     super(props, context);
     this.initRouting = this.initRouting.bind(this);
   }
 
-  static contextTypes = {
-    store: PropTypes.object,
-    kScope: PropTypes.object,
-  };
-
-  static childContextTypes = {
-    kScope: PropTypes.object,
-  };
+  static contextType = KLogicContext;
 
   initRouting() {
     flatRoutes = [];
@@ -318,10 +309,10 @@ class RouterInt extends ScopedComponent {
     );
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.initRouting();
-    this.assocReducer(
-      this.getCurrentScope(),
+    this.context.assocReducer(
+      [...this.context.scope, '.'],
       createRouterReducer(this.props.scope)
     );
   }
@@ -336,17 +327,16 @@ class RouterInt extends ScopedComponent {
     }
   }
 
-  getCurrentScopePart() {
-    return [];
-  }
-
   render() {
+    if (!this.context.state.router) {
+      return null;
+    }
     const {
       router: {name, params},
-    } = this.getScopedState();
+    } = this.context.state;
 
     const components = componentMapSelector(flatRoutes)[name];
-    const model = this.context.store.getState();
+    const model = this.context.state;
 
     return (
       <div>

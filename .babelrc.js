@@ -31,6 +31,7 @@ module.exports = {
     '@babel/proposal-object-rest-spread',
     '@babel/plugin-transform-spread',
     '@babel/plugin-proposal-class-properties',
+    '@babel/plugin-syntax-dynamic-import',
     NODE_ENV === 'test' && '@babel/transform-modules-commonjs',
   ].filter(Boolean),
 };
